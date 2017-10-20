@@ -33,9 +33,9 @@
     <name>Apache Sling Feature Flags</name>
     
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/sling/trunk/bundles/extensions/feature-flags</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/sling/trunk/bundles/extensions/feature-flags</developerConnection>
-        <url>http://svn.apache.org/viewvc/sling/trunk/bundles/extensions/feature-flags</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-featureflags.git</conncetion>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-featureflags.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-featureflags.git</url>
     </scm>
 
     <build>
