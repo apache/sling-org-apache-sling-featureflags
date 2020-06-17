@@ -1,0 +1,7 @@
+github:
+  description: "Apache Sling Feature Flags"
+  homepage: "https://sling.apache.org/"
+  labels:
+    - java
+    - sling
+    - feature-flags
