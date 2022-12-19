@@ -28,16 +28,14 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Designate(ocd = ConfiguredFeature.Config.class, factory = true)
 @Component(service = Feature.class,
-           configurationPolicy = ConfigurationPolicy.REQUIRE,
-           property = {
-                   Constants.SERVICE_VENDOR + "=The Apache Software Foundation"
-           })
+           configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class ConfiguredFeature implements Feature {
 
     @ObjectClassDefinition(name = "Apache Sling Configured Feature",
@@ -59,18 +57,23 @@ public class ConfiguredFeature implements Feature {
         @AttributeDefinition(name = "Enabled", description = "Boolean flag indicating whether the feature is "
                 + "enabled or not by this configuration")
         boolean enabled() default false;
+
+        @AttributeDefinition(name = "Allow Override", description = "If disabled, the enabled state can't be overriden for a request")
+        boolean allowOverride() default true;
     }
 
     private static final String PROP_FEATURE = "feature";
 
+    private volatile String name;
 
-    private String name;
+    private volatile String description;
 
-    private String description;
+    private volatile boolean enabled;
 
-    private boolean enabled;
+    private volatile boolean allowOverride;
 
     @Activate
+    @Modified
     private void activate(final Config config, final Map<String, Object> properties) {
         this.name = config.name();
         if ( this.name == null ) {
@@ -87,24 +90,25 @@ public class ConfiguredFeature implements Feature {
             this.description = this.name;
         }
         this.enabled = config.enabled();
+        this.allowOverride = config.allowOverride();
     }
 
     @Override
-    public boolean isEnabled(ExecutionContext context) {
-
-        // Request Parameter Override
-        ServletRequest request = context.getRequest();
-        if (request != null) {
-            String[] features = request.getParameterValues(PROP_FEATURE);
-            if (features != null) {
-                for (String feature : features) {
-                    if (this.name.equals(feature)) {
-                        return true;
+    public boolean isEnabled(final ExecutionContext context) {
+        if ( this.allowOverride ) {
+            // Request Parameter Override
+            final ServletRequest request = context.getRequest();
+            if (request != null) {
+                final String[] features = request.getParameterValues(PROP_FEATURE);
+                if (features != null) {
+                    for (String feature : features) {
+                        if (this.name.equals(feature)) {
+                            return true;
+                        }
                     }
-                }
+                }    
             }
         }
-
         return this.enabled;
     }
 

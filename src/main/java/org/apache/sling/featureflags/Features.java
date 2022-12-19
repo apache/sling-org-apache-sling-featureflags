@@ -18,6 +18,8 @@
  */
 package org.apache.sling.featureflags;
 
+import java.util.Collection;
+
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -35,9 +37,22 @@ public interface Features {
      * are configured with OSGi configuration whose factory PID is
      * {@code org.apache.sling.featureflags.Feature}.
      *
-     * @return The known features
+     * @return The known features, the array might be empty
+     * @deprecated Use {@link #getAllFeatures()} instead
      */
     Feature[] getFeatures();
+
+    /**
+     * Get the list of all (known) features.
+     * <p>
+     * Features are known if they are registered as {@link Feature} services or
+     * are configured with OSGi configuration whose factory PID is
+     * {@code org.apache.sling.featureflags.Feature}.
+     *
+     * @return The known features, the collection might be empty
+     * @since 1.2.0
+     */
+    Collection<Feature> getAllFeatures();
 
     /**
      * Returns the feature with the given name.

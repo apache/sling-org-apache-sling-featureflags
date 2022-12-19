@@ -36,30 +36,14 @@ public class ExecutionContextImpl implements ExecutionContext {
 
     private static final String REQUEST_ATTRIBUTE_RESOLVER = "org.apache.sling.auth.core.ResourceResolver";
 
-    private final ResourceResolver resourceResolver;
-
     private final HttpServletRequest request;
 
-    private final Map<String, Boolean> featureCache;
+    private volatile Map<String, Boolean> featureCache;
 
     private final Features features;
 
     public ExecutionContextImpl(final Features features, final HttpServletRequest request) {
-        ResourceResolver resourceResolver = null;
-        if (request != null) {
-            if ( request instanceof SlingHttpServletRequest ) {
-                resourceResolver = ((SlingHttpServletRequest)request).getResourceResolver();
-            } else {
-                Object resolverObject = request.getAttribute(REQUEST_ATTRIBUTE_RESOLVER);
-                if (resolverObject instanceof ResourceResolver) {
-                    resourceResolver = (ResourceResolver) resolverObject;
-                }
-            }
-        }
-
         this.request = request;
-        this.resourceResolver = resourceResolver;
-        this.featureCache = new HashMap<String, Boolean>();
         this.features = features;
     }
 
@@ -70,7 +54,18 @@ public class ExecutionContextImpl implements ExecutionContext {
 
     @Override
     public ResourceResolver getResourceResolver() {
-        return this.resourceResolver;
+        ResourceResolver resourceResolver = null;
+        if (request != null) {
+            if ( request instanceof SlingHttpServletRequest ) {
+                resourceResolver = ((SlingHttpServletRequest)request).getResourceResolver();
+            } else {
+                final Object resolverObject = request.getAttribute(REQUEST_ATTRIBUTE_RESOLVER);
+                if (resolverObject instanceof ResourceResolver) {
+                    resourceResolver = (ResourceResolver) resolverObject;
+                }
+            }
+        }
+        return resourceResolver;
     }
 
     @Override
@@ -79,14 +74,17 @@ public class ExecutionContextImpl implements ExecutionContext {
     }
 
     boolean isEnabled(final Feature feature) {
+        if ( this.featureCache == null ) {
+            this.featureCache = new HashMap<>();
+        }
         final String name = feature.getName();
-        Boolean entry = this.featureCache.get(name);
-        if (entry == null) {
+        Boolean result = this.featureCache.get(name);
+        if (result == null) {
             // put false in the cache to stop on circular calls
             this.featureCache.put(name, Boolean.FALSE);
-            entry = feature.isEnabled(this);
-            this.featureCache.put(name, entry);
+            result = feature.isEnabled(this);
+            this.featureCache.put(name, result);
         }
-        return entry;
+        return result;
     }
 }
