@@ -2,6 +2,16 @@ github:
   description: "Apache Sling Feature Flags"
   homepage: "https://sling.apache.org/"
   labels:
-    - java
-    - sling
-    - feature-flags
+  - "java"
+  - "sling"
+  - "feature-flags"
+  autolink_jira:
+  - "SLING"
+  - "OAK"
+  - "JCR"
+  - "JCRVLT"
+  - "INFRA"
+  - "FELIX"
+  - "MNG"
+notifications:
+  jira_options: "link"
