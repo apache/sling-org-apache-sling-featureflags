@@ -18,10 +18,6 @@
  */
 package org.apache.sling.featureflags.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-
 import java.util.Collections;
 
 import org.apache.sling.featureflags.Feature;
@@ -29,6 +25,10 @@ import org.apache.sling.featureflags.Features;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.osgi.framework.Constants;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 public class FeatureManagerTest {
 

@@ -18,9 +18,9 @@
  */
 package org.apache.sling.featureflags.impl;
 
-import java.util.Map;
-
 import javax.servlet.ServletRequest;
+
+import java.util.Map;
 
 import org.apache.sling.featureflags.ExecutionContext;
 import org.apache.sling.featureflags.Feature;
@@ -34,31 +34,42 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Designate(ocd = ConfiguredFeature.Config.class, factory = true)
-@Component(service = Feature.class,
-           configurationPolicy = ConfigurationPolicy.REQUIRE)
+@Component(service = Feature.class, configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class ConfiguredFeature implements Feature {
 
-    @ObjectClassDefinition(name = "Apache Sling Configured Feature",
-            description = "Allows for the definition of statically configured features which are defined and enabled through OSGi configuration",
+    @ObjectClassDefinition(
+            name = "Apache Sling Configured Feature",
+            description =
+                    "Allows for the definition of statically configured features which are defined and enabled through OSGi configuration",
             factoryPid = "org.apache.sling.featureflags.Feature")
     public static @interface Config {
 
-        @AttributeDefinition(name = "Name", description = "Short name of this feature. This name is used "
-            + "to refer to this feature when checking for it to be enabled or not. This "
-            + "property is required and defaults to a name derived from the feature's class "
-            + "name and object identity. It is strongly recommended to define a useful and unique for the feature")
+        @AttributeDefinition(
+                name = "Name",
+                description =
+                        "Short name of this feature. This name is used "
+                                + "to refer to this feature when checking for it to be enabled or not. This "
+                                + "property is required and defaults to a name derived from the feature's class "
+                                + "name and object identity. It is strongly recommended to define a useful and unique for the feature")
         String name();
 
-        @AttributeDefinition(name = "Description", description = "Description for the feature. The "
-                + "intent is to descibe the behaviour of the application if this feature would be "
-                + "enabled. It is recommended to define this property. The default value is the value of the name property.")
+        @AttributeDefinition(
+                name = "Description",
+                description =
+                        "Description for the feature. The "
+                                + "intent is to descibe the behaviour of the application if this feature would be "
+                                + "enabled. It is recommended to define this property. The default value is the value of the name property.")
         String description();
 
-        @AttributeDefinition(name = "Enabled", description = "Boolean flag indicating whether the feature is "
-                + "enabled or not by this configuration")
+        @AttributeDefinition(
+                name = "Enabled",
+                description =
+                        "Boolean flag indicating whether the feature is " + "enabled or not by this configuration")
         boolean enabled() default false;
 
-        @AttributeDefinition(name = "Allow Override", description = "If disabled, the enabled state can't be overriden for a request")
+        @AttributeDefinition(
+                name = "Allow Override",
+                description = "If disabled, the enabled state can't be overriden for a request")
         boolean allowOverride() default true;
     }
 
@@ -76,17 +87,16 @@ public class ConfiguredFeature implements Feature {
     @Modified
     private void activate(final Config config, final Map<String, Object> properties) {
         this.name = config.name();
-        if ( this.name == null ) {
+        if (this.name == null) {
             Object pid = properties.get(Constants.SERVICE_PID);
-            if ( pid == null ) {
+            if (pid == null) {
                 this.name = getClass().getName() + "$" + System.identityHashCode(this);
             } else {
                 this.name = pid.toString();
             }
-
         }
         this.description = config.description();
-        if ( this.description == null ) {
+        if (this.description == null) {
             this.description = this.name;
         }
         this.enabled = config.enabled();
@@ -95,7 +105,7 @@ public class ConfiguredFeature implements Feature {
 
     @Override
     public boolean isEnabled(final ExecutionContext context) {
-        if ( this.allowOverride ) {
+        if (this.allowOverride) {
             // Request Parameter Override
             final ServletRequest request = context.getRequest();
             if (request != null) {
@@ -106,7 +116,7 @@ public class ConfiguredFeature implements Feature {
                             return true;
                         }
                     }
-                }    
+                }
             }
         }
         return this.enabled;
