@@ -18,10 +18,10 @@
  */
 package org.apache.sling.featureflags.impl;
 
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -56,8 +56,8 @@ public class ExecutionContextImpl implements ExecutionContext {
     public ResourceResolver getResourceResolver() {
         ResourceResolver resourceResolver = null;
         if (request != null) {
-            if ( request instanceof SlingHttpServletRequest ) {
-                resourceResolver = ((SlingHttpServletRequest)request).getResourceResolver();
+            if (request instanceof SlingHttpServletRequest) {
+                resourceResolver = ((SlingHttpServletRequest) request).getResourceResolver();
             } else {
                 final Object resolverObject = request.getAttribute(REQUEST_ATTRIBUTE_RESOLVER);
                 if (resolverObject instanceof ResourceResolver) {
@@ -74,7 +74,7 @@ public class ExecutionContextImpl implements ExecutionContext {
     }
 
     boolean isEnabled(final Feature feature) {
-        if ( this.featureCache == null ) {
+        if (this.featureCache == null) {
             this.featureCache = new HashMap<>();
         }
         final String name = feature.getName();
